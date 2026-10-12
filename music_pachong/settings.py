@@ -15,76 +15,51 @@ SPIDER_MODULES = ['music_pachong.spiders']
 NEWSPIDER_MODULE = 'music_pachong.spiders'
 
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'music_pachong (+http://www.yourdomain.com)'
+# 模拟浏览器 User-Agent
+USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/124.0.0.0 Safari/537.36"
+)
 
-# Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+# 咪咕不允许爬虫访问，需要关闭该选项
+ROBOTSTXT_OBEY = False
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+# 最大并发请求数
+CONCURRENT_REQUESTS = 8
 
-# Configure a delay for requests for the same website (default: 0)
-# See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
-# See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
-# The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+# 请求间隔（秒），减轻服务器压力
+DOWNLOAD_DELAY = 1
 
-# Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+# 禁用 Cookie，减少轨迹
+COOKIES_ENABLED = False
 
-# Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+# 禁用 Telnet 控制台
+TELNETCONSOLE_ENABLED = False
 
-# Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+# 启用 Pipeline
+ITEM_PIPELINES = {
+    "music_pachong.pipelines.JsonPipeline": 300,
+}
 
-# Enable or disable spider middlewares
-# See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'music_pachong.middlewares.MusicPachongSpiderMiddleware': 543,
-#}
+# 启用自动限速，动态调整请求频率
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 1
+AUTOTHROTTLE_MAX_DELAY = 10
+AUTOTHROTTLE_TARGET_CONCURRENCY = 2.0
 
-# Enable or disable downloader middlewares
-# See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'music_pachong.middlewares.MusicPachongDownloaderMiddleware': 543,
-#}
+# 请求超时（秒）
+DOWNLOAD_TIMEOUT = 15
 
-# Enable or disable extensions
-# See https://doc.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+# 异常重试配置
+DOWNLOADER_MIDDLEWARES = {
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": 550,
+}
+RETRY_ENABLED = True
+RETRY_TIMES = 3                          # 最多重试 3 次
+RETRY_HTTP_CODES = [500, 502, 503, 504, 429, 408]  # 触发重试的 HTTP 状态码
 
-# Configure item pipelines
-# See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'music_pachong.pipelines.MusicPachongPipeline': 300,
-#}
-
-# Enable and configure the AutoThrottle extension (disabled by default)
-# See https://doc.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
-
-# Enable and configure HTTP caching (disabled by default)
-# See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
+# 启用 HTTP 缓存（调试时有用，生产环境可关闭）
 #HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
+#HTTPCACHE_EXPIRATION_SECS = 3600
 #HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
